@@ -287,14 +287,149 @@ relatable to `FactSales[Location Key]` as 1-to-many.
 
 ## Additional Notes
 
-- **No duplicate rows** were found in the raw fact-level data (`Table.Distinct` on
+- No duplicate rows were found in the raw fact-level data (`Table.Distinct` on
   the full row set returned zero removed rows), so no full-row deduplication was
   required at the fact level — only at the dimension level, where repetition is
   expected and intentional prior to deduplication.
-- **No null values** were present in any column of the raw dataset, so no
+  No null values were present in any column of the raw dataset, so no
   null-handling/imputation strategy was required for this dataset.
   
-  (
+  
+# Section C: Data Modelling
+
+## Overview
+
+The cleaned queries from Section B were assembled into a star schema rather than
+left as a single flat table. A flat table was deliberately avoided because it would
+force every customer, product, and location attribute to repeat on all 51,290
+transaction rows, bloat the model, and make relationship-based filtering (slicers,
+cross-filtering, drill-down) unreliable. A star schema instead separates
+what happened (the fact table) from the descriptive context around it
+(the dimension tables), which is both more storage-efficient and the standard,
+recommended approach for Power BI reporting.
+
+The final model:
+
+```
+                     DimDate
+                        |
+DimCustomer ---- FactSales ---- DimProduct
+                        |
+                  DimLocation
+```
+
+## Why `FactSales` Was Selected as the Fact Table
+
+`FactSales` holds the transactional grain of the dataset — one row per order
+line — and contains every numeric measure the report needs to aggregate:
+`Sales`, `Profit`, `Quantity`, `Discount`, and `Shipping Cost`. A fact table should
+sit at the centre of the model because it is the table that grows with business
+activity (every new order adds a row here) and is the table all analytical measures
+are calculated against. All descriptive attributes (who, what, where, when) were
+deliberately removed from this table during Section B and pushed into dimension
+tables, leaving `FactSales` with only:
+
+- Foreign/join keys: `Order ID`, `Customer ID`, `Product ID`, `Location Key`,
+  `Order Date`, `Ship Date`
+- Measures: `Sales`, `Profit`, `Quantity`, `Discount`, `Shipping Cost`
+- The `Profitability Flag` conditional column created in Section B
+
+## Why Each Dimension Was Created
+
+| Dimension | Purpose | Key |
+|---|---|---|
+| DimCustomer | Describes *who* placed the order — Customer Name and Segment — so sales/profit can be sliced by customer segment without repeating that text on every transaction row. | `Customer ID` |
+| DimProduct | Describes *what* was sold — Product Name, Category, Sub-Category — enabling category-level analysis and drill-down from Category → Sub-Category → Product. | `Product ID` |
+|DimLocation | Describes *where* the order shipped — Country, State, City, Region, Market — enabling geographic analysis (maps, regional comparisons). Required a generated surrogate key (see Modelling Challenges below) since no natural unique location identifier existed in the raw data. | `Location Key` (generated) |
+| DimDate | Describes when the order happened, as a continuous calendar table independent of the transaction data. Required for correct time-intelligence DAX (e.g. `SAMEPERIODLASTYEAR`, `YoY Growth %`) — these functions fail or behave unreliably against a date column that has gaps (dates with no orders), which `Order Date` alone would have. | `Date` |
+
+Each dimension answers a different analytical question a manager might ask
+("by customer," "by product," "by region," "by time period"), which is exactly the
+separation a star schema is designed to support.
+
+## Relationships, Cardinality, and Filter Direction
+
+| Relationship | Cardinality | Cross-Filter Direction |
+|---|---|---|
+| `DimCustomer[Customer ID]` → `FactSales[Customer ID]` | One-to-Many | Single (dimension → fact) |
+| `DimProduct[Product ID]` → `FactSales[Product ID]` | One-to-Many | Single (dimension → fact) |
+| `DimLocation[Location Key]` → `FactSales[Location Key]` | One-to-Many | Single (dimension → fact) |
+| `DimDate[Date]` → `FactSales[Order Date]` | One-to-Many | Single (dimension → fact) |
+
+Cardinality decision: every relationship is one-to-many, because one row in
+a dimension table (one customer, one product, one location, one date) can relate to
+many rows in the fact table (many orders by that customer, of that product, from
+that location, on that date). This is the natural cardinality of a star schema and
+matches how the data was normalized in Section B — each dimension was explicitly
+deduplicated down to one row per key before being related.
+
+Filter direction decision: all relationships use single-direction filtering,
+flowing from each dimension into the fact table. This was chosen deliberately over
+bidirectional filtering because:
+- It matches how the report is actually used — users filter the fact table by
+  customer/product/location/date, not the other way around.
+- Bidirectional filtering across multiple dimensions simultaneously connected to one
+  fact table can create ambiguous filter paths, where Power BI cannot
+  determine a single, predictable way to apply a filter. Since this model already
+  has four dimensions on one fact table, keeping every relationship single-direction
+  avoids this risk entirely.
+- No genuine many-to-many business scenario exists in this dataset (e.g. no
+  promotions-to-products bridge table) that would justify the added complexity of
+  bidirectional or many-to-many relationships.
+
+## The Date Table
+
+`DimDate` was built as a continuous calendar (padded slightly beyond the actual
+`Order Date`/`Ship Date` range to avoid edge-case gaps) and explicitly marked as an
+official Date Table in Power BI (Modeling → Mark as Date Table, using the
+`Date` column). This is required for Power BI's time-intelligence DAX functions
+(`SAMEPERIODLASTYEAR`, `DATESYTD`, etc.) to behave correctly — without an official,
+continuous, gap-free date table, these functions can silently return incorrect
+results.
+
+## Data Types and Naming
+
+- All key/join columns (`Customer ID`, `Product ID`, `Location Key`, `Date`) were
+  set to consistent, matching data types on both sides of each relationship (text
+  for ID keys, Date for the date relationship) — mismatched types are a common
+  cause of relationships silently failing to match rows.
+- All queries and tables were renamed to clear business names (`FactSales`,
+  `DimCustomer`, `DimProduct`, `DimLocation`, `DimDate`) rather than default names
+  like `Query1`.
+- Foreign/join key columns inside `FactSales` (`Customer ID`, `Product ID`,
+  `Location Key`) were hidden from Report View (right-click → Hide in Report
+  View) so report users only ever browse and filter using the clean fields
+  exposed on the dimension tables, not raw keys.
+
+## Modelling Challenges Encountered
+
+1. No natural key for location. Unlike Customer and Product, the raw data had
+   no single column that uniquely identified a location — `City` alone repeats
+   across different states and countries (e.g. multiple "Springfield" entries).
+   This was resolved by generating a surrogate key,
+   `Location Key = Text.Combine({[Country], [State], [City]}, "|")`, added
+   identically to both `DimLocation` and `FactSales` in Power Query so the two
+   tables could be related on a guaranteed-unique field.
+
+2. Two date fields competing for the date relationship. The fact table
+   contains both `Order Date` and `Ship Date`, but a table can only have one
+   *active* relationship to a given Date table at a time. `Order Date` was chosen
+   as the active relationship because most analysis in this report (sales trends,
+   YoY growth, seasonality) is order-driven rather than fulfilment-driven. An
+   inactive second relationship was added from `DimDate[Date]` to
+   `FactSales[Ship Date]`, which can be activated inside a specific DAX measure
+   using `USERELATIONSHIP()` for any shipping-time-specific analysis (e.g. average
+   shipping delay), without disturbing the default order-based time intelligence.
+
+3. Potential one-to-many key conflicts in dimensions. Before finalizing
+   `DimCustomer` and `DimProduct`, a check was run to confirm that no `Customer ID`
+   or `Product ID` was ever associated with more than one `Segment` or
+   `Product Name` respectively (see Section B, Transformation Log). Confirming this
+   before deduplication was necessary to avoid silently breaking the one-to-many
+   cardinality these relationships depend on.
+
+## Model View
+
 
 
 
