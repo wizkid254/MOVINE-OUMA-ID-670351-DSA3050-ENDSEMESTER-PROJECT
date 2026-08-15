@@ -108,7 +108,7 @@ Reason: Power BI's own row context and the `Order ID` field already identify
 transactions; a meaningless numeric index adds no analytical or modelling value.
 
 Result: One fewer redundant column in the Fact table.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-14%20121556.png?raw=true)
 ---
 
 ### 3. Resolving a duplicate, ambiguous geography column
