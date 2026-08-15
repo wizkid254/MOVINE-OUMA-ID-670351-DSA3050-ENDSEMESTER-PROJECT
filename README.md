@@ -491,7 +491,7 @@ CALCULATE([Total Orders], FactSales[Profit] < 0)
 `DIVIDE()` is used instead of the `/` operator throughout, since it safely returns
 the specified fallback value (0) instead of throwing a divide-by-zero error when a
 filter context has no sales (e.g. a slicer selection with no matching rows).
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20205416.png?raw=true)
 ---
 
 ## Level 3 — Advanced DAX
