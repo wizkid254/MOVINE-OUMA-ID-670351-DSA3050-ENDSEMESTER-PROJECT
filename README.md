@@ -283,7 +283,7 @@ countries that happen to share a city name.
 
 Result: A dedicated `DimLocation` table with a guaranteed-unique key, correctly
 relatable to `FactSales[Location Key]` as 1-to-many.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20203017.png?raw=true)
 ---
 
 ## Additional Notes
