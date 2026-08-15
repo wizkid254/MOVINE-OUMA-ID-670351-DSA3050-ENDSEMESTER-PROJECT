@@ -149,7 +149,7 @@ reused consistently for any date-based filtering, not just Order Date.
 Result: A clean Fact table with no derived columns, and a fully-featured
 `DimDate` table containing Week Number alongside Year, Quarter, Month, and Weekday
 attributes.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-14%20122424.png?raw=true)
 ---
 
 ### 5. Correcting date/time data types
