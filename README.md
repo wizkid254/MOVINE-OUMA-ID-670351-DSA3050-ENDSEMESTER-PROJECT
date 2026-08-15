@@ -431,6 +431,7 @@ results.
    cardinality these relationships depend on.
 
 ## Model View
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20204059.png?raw=true)
 
 # Section D: DAX & Business Calculations
 
