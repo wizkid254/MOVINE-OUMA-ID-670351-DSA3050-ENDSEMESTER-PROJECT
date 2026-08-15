@@ -7,7 +7,7 @@
 ### 1. Source of the Dataset
 
 The dataset is the **Global Superstore** dataset, a widely used retail transactions dataset originally distributed as a Tableau sample dataset and commonly hosted on Kaggle (e.g. "Global Superstore Dataset" by various uploaders). It is a real-world-style dataset built from an international superstore's order history.
-![Alternative text here](images/screenshot 2026-08-13 235048.png
+![This is a image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-13%20235048.png?raw=true)
 
 
 ### 2. What the Dataset Represents
