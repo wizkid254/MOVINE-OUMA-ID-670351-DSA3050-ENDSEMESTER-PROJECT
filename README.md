@@ -56,7 +56,7 @@ This positions the project around: "Where is the business winning, where is it l
 5. Does shipping mode or order priority affect profitability (e.g. via shipping cost as a share of order value), and are there markets where shipping cost erodes margin significantly?
 6.  Which sub-categories are consistently loss-making across multiple markets, indicating a structural/pricing issue rather than a one-off?
 
-7.  # Section B: Data Cleaning & Transformation (Power Query)
+7.  # Section B: Data Cleaning & Transformation (Power Query)(20 marks)
 
 ## Overview
 
@@ -297,7 +297,8 @@ I also created DimDate table
   null-handling/imputation strategy was required for this dataset.
   
   
-# Section C: Data Modelling
+# Section C: Data Modelling(20 marks)
+
 
 ## Overview
 
@@ -433,7 +434,7 @@ results.
 ## Model View
 ![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20204059.png?raw=true)
 
-# Section D: DAX & Business Calculations
+# Section D: DAX & Business Calculations(20 marks)
 
 ## Overview
 
@@ -651,7 +652,7 @@ the report.
   Sub-Category visuals across Page 1 and Page 3, and as a legend/label field on the
   diagnostic breakdown chart.
 
-# Section E: Professional Power BI Dashboards
+# Section E: Professional Power BI Dashboards(20 marks)
 
 ## Overview
 
@@ -719,57 +720,161 @@ diagnostic DAX measures (Section D).
 
 ![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20212249.png?raw=true)
 ![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20212644.png?raw=true)
-**Interactivity used on this page:**
-- **Drill-through:** right-click a bar in the Loss-Making Orders chart → **Drill through → Order Details** to see the underlying transactions.
-- **Report-page tooltip:** hovering over any bar in the Shipping Cost Ratio chart shows a small tooltip page with a mini KPI card and trend, avoiding the need to clutter the main canvas with extra visuals.
-- **Bookmarks + navigation buttons:** three buttons at the top of every page (styled consistently) let the user jump directly between Executive Overview, Detailed Analysis, and Diagnostic Analysis without using the page tab strip, reinforcing the intended narrative order.
+
+- 
+# Key Insights, Recommendations & Storytelling
+
+## Overview
+
+This section summarizes what the dashboard reveals, translates those findings
+into concrete business recommendations, and explains how the three report pages
+work together to tell a single, coherent story — moving from what happened to
+what should be done about it. All figures below were calculated directly from
+the cleaned dataset and should match the KPI cards and visuals in the final
+`.pbix` file.
 
 ---
 
-## Interactivity Summary (Report-Wide)
+## Key Insights
 
-| Feature | Implemented | Where |
+### 1. Overall performance is healthy but margin is thin
+Across the full 2011–2014 period, the business generated $12.64M in total
+sales and $1.47M in profit, a Profit Margin of 11.6%. Margin has
+improved gradually year over year (11.0% in 2011 → 11.7% in 2014), alongside
+consistent sales growth each year — but an 11–12% margin leaves little room
+for error, meaning the loss-making pockets identified below matter more than
+their dollar size alone suggests.
+
+### 2. Furniture is the weakest-performing category — and Tables specifically lose money
+`Technology` (13.99% margin) and `Office Supplies` (13.69% margin) are both
+solidly profitable, but `Furniture` trails badly at just 6.94% margin —
+roughly half the profitability of the other two categories on similar sales
+volume. Drilling in, the Tables sub-category is the single worst performer
+in the entire dataset: -8.47% margin, losing a combined $64,083 despite
+$757,034 in sales. This loss is not isolated to one region — Tables lose money
+in the EU (-$20,998), APAC (-$20,129), US (-$17,725), and LATAM (-$12,306)
+markets alike, while only turning a small profit in Canada, EMEA, and Africa.
+
+### 3. Heavy discounting is strongly associated with losses
+There is a clear, near-linear relationship between discount level and
+profitability:
+
+| Discount Band | Margin % | Orders |
 |---|---|---|
-| Slicers | ✅ | Page 1 (Year, Market, Segment) |
-| Cross-filtering | ✅ | All pages (default Power BI behaviour, verified) |
-| Drill-down | ✅ | Page 2 (Category → Sub-Category → Product) |
-| Drill-through | ✅ | Page 3 → Order Details page |
-| Report-page tooltip | ✅ | Page 3 (Shipping Cost Ratio chart) |
-| Bookmarks + navigation buttons | ✅ | All pages (top navigation bar) |
-| Dynamic titles | ✅ | Page 3 (measure-driven summary text box) |
+| 0% | 25.3% | 15,211 |
+| 0–10% | 17.2% | 3,028 |
+| 10–20% | 9.9% | 4,363 |
+| 20–30% | -5.5% | 843 |
+| 30–50% | -32.4% | 3,674 |
+| 50%+ | -111.0% | 2,369 |
 
-This exceeds the brief's requirement of "more than basic static charts" without
-using every possible feature purely for its own sake — each interactive element
-was chosen because it serves a specific question on that page.
+Every order discounted 20% or more turns a loss on average, and orders
+discounted 50%+ lose more than the sale value itself. Roughly 6,900 orders
+(about 27% of all orders) fall into these loss-making discount bands.
+
+### 4. Losses are broad-based, not a handful of outliers
+24.5% of all orders (12,544 of 51,290) are loss-making, totaling
+-$920,646 in losses — an amount equivalent to nearly two-thirds of the
+company's entire realized profit. This is too large and widespread to be
+explained by a few unusual transactions; it points to a systemic discounting
+and/or product-mix problem rather than isolated bad orders.
+
+### 5. Fulfilment speed carries a real cost, but "Standard" shipping is comparatively efficient
+Shipping cost as a share of sales varies meaningfully by ship mode: Same Day
+(17.4%) and First Class (16.8%) are markedly more expensive relative to
+sales than Standard Class (8.1%). Since Standard Class also carries the
+largest share of total sales ($7.58M of $12.64M), the business is not overly
+reliant on its most expensive fulfilment option — but faster shipping tiers
+are eating a disproportionate share of revenue where they are used.
+
+### 6. Geography shows strong performers and one clear underperformer
+Margin by market ranges widely: Canada leads at 26.6% (on a small sales
+base), followed by EU (12.7%) and US (12.5%). EMEA is the clear
+laggard at just 5.5% margin — less than half the margin of every other major
+market — despite not being the smallest market by sales ($806K, ahead of
+Africa and Canada). EMEA warrants specific investigation as a market where
+something other than pure sales performance is compressing profitability.
+
+### 7. Customer segments are similarly profitable — this is not where the problem lies
+`Consumer` (11.5%), `Corporate` (11.5%), and `Home Office` (12.0%) margins are
+close to identical. This is itself a useful insight: segment is not a
+meaningful driver of the profitability gap seen elsewhere in the data, so
+diagnostic effort is better spent on category, discount, and geography than on
+re-targeting customer segments.
 
 ---
 
-## Layout, Colour, and Formatting Standards Applied
+## Recommendations
 
-- **Theme:** one custom or built-in Power BI theme applied report-wide (View → Themes), so fonts, default colours, and background styling are identical across all three pages.
-- **Colour consistency:** each `Category` (Furniture, Office Supplies, Technology) is assigned a fixed colour that is used identically on every page it appears — set manually via the visual's Format pane → Data colors, rather than left to Power BI's default auto-assignment (which can shift order/colour per visual).
-- **Alignment:** all visuals snapped to a consistent grid using Format → Align → Distribute Horizontally/Vertically, so KPI cards, charts, and slicers line up cleanly across the canvas.
-- **Visual hierarchy:** headline KPI cards sit at the top of Page 1 in the largest, boldest text; supporting charts are visually smaller and placed below, guiding the eye in the correct reading order.
-- **Font:** one consistent font family and a limited set of font sizes (title, axis label, data label) used throughout — no visual uses a font not used elsewhere in the report.
-- **White space:** deliberately avoided cramming every visual possible onto each page — each page holds 4–5 primary visuals plus slicers/navigation, leaving breathing room around each element.
+1. Review or restructure discount authorization above 20%.
+   Since every discount band at 20% or higher averages a net loss, and the
+   30%+ bands lose disproportionately more than the sale amount, discounting
+   policy should require explicit approval (or be disallowed by default)
+   beyond the 20% threshold — particularly the 50%+ band, which is actively
+   destroying value on every order it touches.
+
+ 2.  Investigate the Tables sub-category specifically, not Furniture broadly.
+   Since losses are concentrated in Tables and consistent across four separate
+   markets, this looks like a product-level issue (cost structure, supplier
+   pricing, or a category-wide discounting pattern specific to Tables) rather
+   than a regional or seasonal one. A targeted cost/pricing review of Tables
+   is likely to yield more improvement than a blanket Furniture strategy.
+
+3. Conduct a focused review of the EMEA market.
+   EMEA's margin is less than half that of comparable markets despite
+   meaningful sales volume, which rules out "too small to matter." Its
+   discount practices, cost base, and product mix should be compared directly
+   against the EU and US for divergence.
+
+4. Protect Standard Class as the default shipping option and reconsider Same Day/First Class pricing.
+   Given Same Day and First Class shipping consume roughly double the sales
+   share in shipping cost compared to Standard, either the shipping surcharge
+   passed to premium-shipping customers should be revisited, or these options
+   should be positioned/priced to better reflect their true cost.
+
+5. Do not prioritize segment-based interventions.
+   Because Consumer, Corporate, and Home Office margins are nearly identical,
+   resources aimed at "fixing" a specific segment's profitability are unlikely
+   to move the needle — the data points toward discount policy, product mix,
+   and geography as the higher-leverage areas.
 
 ---
 
-## The Overall Story
+## Storytelling: How the Three Pages Build the Case
 
-Read together, the three pages walk a manager through:
+The dashboard is deliberately sequenced so a reader is led from headline
+performance to a specific, actionable finding, rather than being handed a wall
+of disconnected charts:
 
-1. **Page 1** — "Sales and profit are growing/declining by X%, and here's where in the world our business is concentrated."
-2. **Page 2** — "Here's specifically which product sub-categories and customers are responsible for that performance."
-3. **Page 3** — "Here's why the underperforming areas are underperforming — and here's the exact set of orders to investigate further."
+Page 1 (Executive Overview) — "What happened?"
+Establishes that the business is growing and modestly profitable overall
+(11.6% margin, steady YoY growth), giving the reader a baseline before any
+problem is introduced. The Category bar chart and geographic map plant the
+first visual clue — Furniture and EMEA already look weaker here, without yet
+explaining why.
 
-## Screenshots
+Page 2 (Detailed Analysis,Geographical insight) — "Where, and for whom?"**
+Narrows the focus onto product and customer dimensions. The
+Category → Sub-Category treemap drill-down isolates Tables as the specific
+sub-category dragging Furniture down, while the Segment breakdown shows
+segment is not where the story lives — actively ruling out a plausible but
+incorrect explanation, which strengthens the credibility of the diagnosis that
+follows.
 
-| File | Shows |
-|---|---|
-| `04_dashboard_overview.png` | Page 1 — Executive Overview |
-| `05_dashboard_analysis.png` | Page 2 — Detailed Analysis |
-| `06_dashboard_insights.png` | Page 3 — Diagnostic Analysis |
+Page 3 (Diagnostic Analysis) — "Why, and what needs attention?"
+Directly tests the two remaining hypotheses raised by Pages 1–2: discounting
+and fulfilment cost. The discount-vs-margin combo chart shows the loss
+threshold appears right around 20% discount, and the loss-by-sub-category/
+market breakdown confirms Tables losses are consistent across regions rather
+than a single-market anomaly. The Shipping Cost Ratio chart closes the loop by
+showing that fulfilment cost, while real, is a secondary factor compared to
+discounting. The page ends with a dynamic, data-driven summary statement and a
+drill-through path straight to the underlying loss-making orders — moving the
+reader from insight directly to an auditable next action.
+
+
+---
+
 
 
 
