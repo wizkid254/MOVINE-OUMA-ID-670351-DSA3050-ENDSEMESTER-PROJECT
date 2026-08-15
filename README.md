@@ -167,7 +167,7 @@ dates.
 
 Result: Both columns are now clean `Date` types, ready to relate directly to
 `DimDate[Date]`.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-14%20122620.png?raw=true)
 ---
 
 ### 6. Standardizing numeric data types
