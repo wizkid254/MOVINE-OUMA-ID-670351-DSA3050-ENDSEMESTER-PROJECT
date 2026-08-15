@@ -93,6 +93,7 @@ information and only clutters the field list and model.
 
 Result: The column list is reduced to genuinely useful fields; the fact table
 is easier to navigate in the Fields pane.
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-14%20121556.png?raw=true)
 
 ---
 
