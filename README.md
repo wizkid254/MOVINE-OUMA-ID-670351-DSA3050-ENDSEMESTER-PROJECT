@@ -202,7 +202,7 @@ every chart and KPI that uses that field.
 
 Result: Every text category now has exactly one consistent representation
 throughout the model.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-14%20124012.png?raw=true)
 ---
 
 ### 8. Creating a conditional column to flag loss-making orders
