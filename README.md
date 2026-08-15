@@ -430,6 +430,228 @@ results.
 
 ## Model View
 
+# Section D: DAX & Business Calculations
+
+## Overview
+
+Fourteen DAX measures were created across the three required complexity levels —
+Core Measures, Calculated Business Measures, and Advanced DAX — to turn the star
+schema built in Section C into a genuine analytical solution rather than a set of
+raw fields. All measures reference `FactSales` and, where time intelligence is
+needed, the marked Date Table `DimDate`.
+
+All measures below were created via **Model view (or Report view) → New Measure**,
+and organized into a dedicated `_Measures` display folder / measure table for
+readability in the Fields pane (optional but recommended: create a blank query
+table named `_Measures` in Power Query with no columns, load it, and assign
+measures to it).
+
+---
+
+## Level 1 — Core Measures
+
+```DAX
+Total Sales = SUM(FactSales[Sales])
+
+Total Profit = SUM(FactSales[Profit])
+
+Total Orders = DISTINCTCOUNT(FactSales[Order ID])
+
+Total Quantity = SUM(FactSales[Quantity])
+
+Average Discount = AVERAGE(FactSales[Discount])
+```
+
+These form the foundational building blocks every other measure is derived from.
+`Total Orders` uses `DISTINCTCOUNT` rather than `COUNTROWS` because a single order
+can span multiple line items (rows) in this dataset — counting rows would
+overstate the number of actual orders.
+
+---
+
+## Level 2 — Calculated Business Measures
+
+```DAX
+Profit Margin % =
+DIVIDE([Total Profit], [Total Sales], 0)
+
+Average Order Value =
+DIVIDE([Total Sales], [Total Orders], 0)
+
+Shipping Cost Ratio % =
+DIVIDE(SUM(FactSales[Shipping Cost]), [Total Sales], 0)
+
+Loss-Making Orders =
+CALCULATE([Total Orders], FactSales[Profit] < 0)
+```
+
+`DIVIDE()` is used instead of the `/` operator throughout, since it safely returns
+the specified fallback value (0) instead of throwing a divide-by-zero error when a
+filter context has no sales (e.g. a slicer selection with no matching rows).
+
+---
+
+## Level 3 — Advanced DAX
+
+```DAX
+Previous Year Sales =
+CALCULATE(
+    [Total Sales],
+    SAMEPERIODLASTYEAR(DimDate[Date])
+)
+
+YoY Sales Growth % =
+DIVIDE(
+    [Total Sales] - [Previous Year Sales],
+    [Previous Year Sales],
+    0
+)
+
+Sales Rank by Sub-Category =
+RANKX(
+    ALL(DimProduct[Sub-Category]),
+    [Total Sales],
+    ,
+    DESC
+)
+
+High Discount Profit Impact =
+VAR HighDiscountThreshold = 0.3
+RETURN
+    CALCULATE(
+        [Total Profit],
+        FactSales[Discount] >= HighDiscountThreshold
+    )
+
+Customer Segment Contribution % =
+DIVIDE(
+    [Total Sales],
+    CALCULATE([Total Sales], ALL(DimCustomer[Segment])),
+    0
+)
+
+Profit Category =
+SWITCH(
+    TRUE(),
+    [Profit Margin %] >= 0.15, "High",
+    [Profit Margin %] >= 0, "Low",
+    "Loss"
+)
+
+Shipping Cost by Ship Date =
+CALCULATE(
+    SUM(FactSales[Shipping Cost]),
+    USERELATIONSHIP(DimDate[Date], FactSales[Ship Date])
+)
+```
+
+`Shipping Cost by Ship Date` demonstrates active use of the **inactive**
+`DimDate`-to-`Ship Date` relationship established in Section C — it is only ever
+"switched on" inside this specific measure via `USERELATIONSHIP()`, without
+affecting the default Order-Date-based time intelligence used everywhere else in
+the report.
+
+---
+
+## Documentation of the Six Most Important Measures
+
+### 1. `Profit Margin %`
+
+- What it calculates: Profit as a percentage of Sales — `[Total Profit] ÷ [Total Sales]`.
+- Why it's useful: Sales volume alone is misleading; a category or region can
+  generate high sales but still be unprofitable. This measure is the single most
+  important profitability indicator in the report.
+- Main DAX functions used: `DIVIDE()`.
+- Filter context effect: Because it references `[Total Profit]` and
+  `[Total Sales]` (both implicit `SUM` aggregations), the measure automatically
+  recalculates for whatever filter context is applied — a single Category, a single
+  Market, a date range from a slicer, or a cross-filter from clicking a bar chart.
+  No explicit `CALCULATE()` is needed because the base measures already respond to
+  row/visual-level filter context.
+  Where used: KPI card on Page 1 (Executive Overview), and as a conditional
+  colour/format trigger on the Category and Sub-Category bar charts on Page 2.
+
+### 2. `YoY Sales Growth %`
+
+- **What it calculates:** The percentage change in Total Sales compared to the same
+  period one year earlier.
+- Why it's useful: Raw sales totals don't reveal trend direction; this measure
+  answers "are we growing or declining?" at a glance, which is central to the
+  Executive Overview story.
+- Main DAX functions used: `CALCULATE()`, `SAMEPERIODLASTYEAR()`, `DIVIDE()`.
+- Filter context effect: `SAMEPERIODLASTYEAR()` shifts the date filter context
+  applied by whatever is currently selected (a specific Year, Quarter, or Month
+  from a slicer) back by exactly one year, then `CALCULATE()` re-evaluates
+  `[Total Sales]` inside that shifted context. This relies entirely on `DimDate`
+  being marked as an official, continuous Date Table — without it, the date shift
+  would be unreliable.
+- **Where used:** KPI card and trend line chart on Page 1.
+
+### 3. `Sales Rank by Sub-Category`
+
+- What it calculates: The rank position of the currently-filtered
+  Sub-Category by Total Sales, from 1 (highest) downward.
+- Why it's useful: Turns a raw sales table into an ordered, at-a-glance
+  leaderboard — instantly showing which sub-categories matter most, used in Page 2's
+  product analysis.
+- Main DAX functions used: `RANKX()`, `ALL()`.
+- Filter context effect: `ALL(DimProduct[Sub-Category])` deliberately removes
+  any existing filter on Sub-Category so that `RANKX` can rank every
+  Sub-Category against each other, rather than being restricted to whatever a
+  slicer has already filtered down to — this is essential, since ranking only
+  makes sense against the full comparison set.
+- Where used: Table/bar chart on Page 2 (Detailed Product Analysis), sorted by
+  this measure to show top and bottom performing sub-categories.
+
+### 4. `Loss-Making Orders`
+
+- What it calculates: A count of distinct orders where `Profit` is negative.
+- Why it's useful: Directly supports the diagnostic question "how much of our
+  business is actually losing money?" — pairs with the `Profitability Flag` column
+  created in Power Query (Section B) for slicing.
+- Main DAX functions used: `CALCULATE()`, boolean filter argument.
+- Filter context effect: `CALCULATE()` layers an additional filter
+  (`FactSales[Profit] < 0`) on top of whatever filter context already exists from
+  slicers or visual interactions, so this measure always reflects "loss-making
+  orders within the current view" rather than the loss count across the entire
+  dataset.
+- Where used: KPI card and breakdown chart by Sub-Category/Market on 
+  (Diagnostic Analysis).
+
+### 5. `Shipping Cost Ratio %`
+
+- What it calculates: Total Shipping Cost as a percentage of Total Sales.
+- Why it's useful: Reveals whether fulfilment costs are quietly eroding
+  margin — a question raw Sales and Profit totals don't answer on their own,
+  supporting the "why is profit lower than expected here?" diagnostic angle.
+- Main DAX functions used: `SUM()`, `DIVIDE()`.
+- Filter context effect: Recalculates per whichever Ship Mode, Region, or
+  Market is selected, since both the numerator and denominator are simple
+  aggregations that respond to the active filter context automatically.
+- Where used: Bar/column chart comparing Ship Modes and Regions .
+
+### 6. `Profit Category`
+
+- What it calculates: Classifies the current filter context into "High",
+  "Low", or "Loss" profitability tiers based on `Profit Margin %` thresholds.
+- Why it's useful: Converts a continuous percentage into a simple, glanceable
+  categorical label — useful for conditional formatting and quickly spotting
+  problem areas without reading exact percentages.
+- Main DAX functions used: `SWITCH()`, `TRUE()` pattern, dependent on the
+  `Profit Margin %` measure.
+- Filter context effect: Since it's built entirely on top of `[Profit Margin %]`
+  (itself filter-context-sensitive), this measure automatically re-classifies for
+  every Category, Sub-Category, Region, or any other filter applied to the visual
+  it sits in — no additional `CALCULATE()` is required because the dependency
+  chain already carries the filter context through.
+- Where used: Conditional formatting / colour rules on the Category and
+  Sub-Category visuals across Page 1 and Page 3, and as a legend/label field on the
+  diagnostic breakdown chart.
+
+---
+
+
+
 
 
 
