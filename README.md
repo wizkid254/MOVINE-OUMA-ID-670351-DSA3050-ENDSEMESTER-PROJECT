@@ -469,7 +469,7 @@ These form the foundational building blocks every other measure is derived from.
 `Total Orders` uses `DISTINCTCOUNT` rather than `COUNTROWS` because a single order
 can span multiple line items (rows) in this dataset — counting rows would
 overstate the number of actual orders.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20204605.png?raw=true)
 ---
 
 ## Level 2 — Calculated Business Measures
