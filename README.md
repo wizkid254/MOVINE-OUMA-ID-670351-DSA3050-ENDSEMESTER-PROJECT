@@ -717,14 +717,7 @@ the numbers seen on Page 1.
 happened — directly using the `Profitability Flag` column (Section B) and the
 diagnostic DAX measures (Section D).
 
-**Visuals included:**
-| Visual | Field(s) | Why this visual |
-|---|---|---|
-| Bar chart | `Loss-Making Orders` by `Sub-Category` and `Market` | Directly surfaces where losses concentrate, using a purpose-built diagnostic measure |
-| Combo chart | `Average Discount` (bars) vs `Profit Margin %` (line), by `Sub-Category` | Overlaying discount level against margin on the same categorical axis visually tests the hypothesis that heavy discounting explains losses |
-| Bar chart | `Shipping Cost Ratio %` by `Ship Mode` and `Region` | Tests whether fulfilment cost, not discounting, is the driver of margin erosion in certain regions |
-| Drill-through page | "Order Details" — full transaction table filtered to whichever Sub-Category/Market the user drilled through from | Lets a manager go from a diagnostic chart straight to the underlying order-level evidence |
-| Dynamic title (text box) | Built from a measure concatenating text and `High Discount Profit Impact` | Summarizes the key finding directly on the page, e.g. *"Orders discounted above 30% account for a disproportionate share of total losses"* — verified against actual measure output before being written |
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20212249.png?raw=true)
 
 **Interactivity used on this page:**
 - **Drill-through:** right-click a bar in the Loss-Making Orders chart → **Drill through → Order Details** to see the underlying transactions.
