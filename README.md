@@ -689,7 +689,7 @@ seconds, with no drilling required.
 **Layout notes:** Kept to 5 visual elements plus slicers — deliberately not
 crowded, generous white space, KPI cards aligned in a single row across the top
 so they read left-to-right like a scoreboard.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20211020.png?raw=true)
 ---
 
 ## Page 2: Detailed Analysis — Product & Customer Analysis
