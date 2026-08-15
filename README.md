@@ -718,7 +718,7 @@ happened — directly using the `Profitability Flag` column (Section B) and the
 diagnostic DAX measures (Section D).
 
 ![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20212249.png?raw=true)
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20212644.png?raw=true)
 **Interactivity used on this page:**
 - **Drill-through:** right-click a bar in the Loss-Making Orders chart → **Drill through → Order Details** to see the underlying transactions.
 - **Report-page tooltip:** hovering over any bar in the Shipping Cost Ratio chart shows a small tooltip page with a mini KPI card and trend, avoiding the need to clutter the main canvas with extra visuals.
