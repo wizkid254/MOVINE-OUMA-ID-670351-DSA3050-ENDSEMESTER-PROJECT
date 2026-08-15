@@ -244,7 +244,7 @@ relationship (one customer row must relate to many fact rows).
 
 Result: A clean `DimCustomer` table with one row per unique `Customer ID`,
 related to `FactSales` as 1-to-many.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20202306.png?raw=true)
 ---
 
 ### 10. Building a dedicated Product dimension (deduplication)
