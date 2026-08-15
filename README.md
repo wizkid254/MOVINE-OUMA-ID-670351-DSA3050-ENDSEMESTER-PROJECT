@@ -648,7 +648,132 @@ the report.
   Sub-Category visuals across Page 1 and Page 3, and as a legend/label field on the
   diagnostic breakdown chart.
 
+# Section E: Professional Power BI Dashboards
+
+## Overview
+
+The report consists of **three pages**, each with a distinct analytical purpose,
+designed to move the reader progressively from a high-level summary to a
+root-cause investigation:
+
+```
+Page 1: Executive Overview  →  Page 2: Detailed Analysis  →  Page 3: Diagnostic Analysis
+     "What happened?"              "Where/who?"                "Why? What needs attention?"
+```
+
+A single consistent theme, colour palette, and font set was applied across all
+three pages (**View → Themes**), and one colour was locked to one meaning
+throughout the entire report — for example, `Technology` is always the same shade
+on every page, so the reader never has to re-learn the colour key when moving
+between pages.
+
 ---
+
+## Page 1: Executive Overview
+
+**Purpose:** Allow a manager to understand overall performance within a few
+seconds, with no drilling required.
+
+**Visuals included:**
+| Visual | Field(s) | Why this visual |
+|---|---|---|
+| KPI Cards | `Total Sales`, `Total Profit`, `Profit Margin %`, `Total Orders`, `YoY Sales Growth %` | Cards give an instant read of the five headline numbers before any interaction |
+| Line chart | `Total Sales` & `Total Profit` by `DimDate[Year-Quarter]` | A line chart is the correct choice for trend-over-time data — shows growth/decline pattern at a glance |
+| Filled/shape map | `Total Sales` by `DimLocation[Country]` | Geography is inherently spatial; a map communicates regional concentration faster than a table of country names |
+| Bar chart | `Total Sales` by `DimProduct[Category]` | A small number of categories (3) is ideal for a simple bar chart comparison |
+| Slicers | `DimDate[Year]`, `DimLocation[Market]`, `DimCustomer[Segment]` | Lets the manager immediately narrow the view to their area of interest without leaving the page |
+
+**Layout notes:** Kept to 5 visual elements plus slicers — deliberately not
+crowded, generous white space, KPI cards aligned in a single row across the top
+so they read left-to-right like a scoreboard.
+
+---
+
+## Page 2: Detailed Analysis — Product & Customer Analysis
+
+**Purpose:** A deeper look at *which* products and *which* customers are driving
+the numbers seen on Page 1.
+
+**Visuals included:**
+| Visual | Field(s) | Why this visual |
+|---|---|---|
+| Treemap | `Total Sales` by `Category` → `Sub-Category` | Treemaps communicate both hierarchy and relative size in one view — ideal for showing which sub-categories dominate within each category |
+| Table/bar chart | Top 10 customers by `SUM(FactSales[Sales])`, using a Top N visual-level filter on `DimCustomer[Customer Name]` | A ranked list directly answers "who are our most valuable customers" — built directly from the fact table's `Sales` field with a Top N filter, no separate ranking measure required |
+| Scatter plot | `Average Discount` (x-axis) vs `Profit Margin %` (y-axis), bubble size = `Total Sales`, by `Sub-Category` | A scatter plot is the correct visual for showing the *relationship* between two continuous variables — reveals whether heavier discounting correlates with lower margin |
+| Donut/stacked bar chart | `Total Sales` by `DimCustomer[Segment]` | A small number of segments (3) suits a simple part-to-whole visual |
+
+**Interactivity used on this page:**
+- **Drill-down** enabled on the treemap and bar chart: `Category → Sub-Category → Product Name`, so a manager can click into "Furniture" and see exactly which sub-category or product is underperforming.
+- **Cross-filtering:** clicking a Segment in the donut chart filters every other visual on the page (Power BI's default behaviour, verified to work cleanly with no conflicting bidirectional relationships from Section C).
+
+---
+
+## Page 3: Advanced/Diagnostic Analysis
+
+**Purpose:** Investigate **why** certain areas underperform, not just what
+happened — directly using the `Profitability Flag` column (Section B) and the
+diagnostic DAX measures (Section D).
+
+**Visuals included:**
+| Visual | Field(s) | Why this visual |
+|---|---|---|
+| Bar chart | `Loss-Making Orders` by `Sub-Category` and `Market` | Directly surfaces where losses concentrate, using a purpose-built diagnostic measure |
+| Combo chart | `Average Discount` (bars) vs `Profit Margin %` (line), by `Sub-Category` | Overlaying discount level against margin on the same categorical axis visually tests the hypothesis that heavy discounting explains losses |
+| Bar chart | `Shipping Cost Ratio %` by `Ship Mode` and `Region` | Tests whether fulfilment cost, not discounting, is the driver of margin erosion in certain regions |
+| Drill-through page | "Order Details" — full transaction table filtered to whichever Sub-Category/Market the user drilled through from | Lets a manager go from a diagnostic chart straight to the underlying order-level evidence |
+| Dynamic title (text box) | Built from a measure concatenating text and `High Discount Profit Impact` | Summarizes the key finding directly on the page, e.g. *"Orders discounted above 30% account for a disproportionate share of total losses"* — verified against actual measure output before being written |
+
+**Interactivity used on this page:**
+- **Drill-through:** right-click a bar in the Loss-Making Orders chart → **Drill through → Order Details** to see the underlying transactions.
+- **Report-page tooltip:** hovering over any bar in the Shipping Cost Ratio chart shows a small tooltip page with a mini KPI card and trend, avoiding the need to clutter the main canvas with extra visuals.
+- **Bookmarks + navigation buttons:** three buttons at the top of every page (styled consistently) let the user jump directly between Executive Overview, Detailed Analysis, and Diagnostic Analysis without using the page tab strip, reinforcing the intended narrative order.
+
+---
+
+## Interactivity Summary (Report-Wide)
+
+| Feature | Implemented | Where |
+|---|---|---|
+| Slicers | ✅ | Page 1 (Year, Market, Segment) |
+| Cross-filtering | ✅ | All pages (default Power BI behaviour, verified) |
+| Drill-down | ✅ | Page 2 (Category → Sub-Category → Product) |
+| Drill-through | ✅ | Page 3 → Order Details page |
+| Report-page tooltip | ✅ | Page 3 (Shipping Cost Ratio chart) |
+| Bookmarks + navigation buttons | ✅ | All pages (top navigation bar) |
+| Dynamic titles | ✅ | Page 3 (measure-driven summary text box) |
+
+This exceeds the brief's requirement of "more than basic static charts" without
+using every possible feature purely for its own sake — each interactive element
+was chosen because it serves a specific question on that page.
+
+---
+
+## Layout, Colour, and Formatting Standards Applied
+
+- **Theme:** one custom or built-in Power BI theme applied report-wide (View → Themes), so fonts, default colours, and background styling are identical across all three pages.
+- **Colour consistency:** each `Category` (Furniture, Office Supplies, Technology) is assigned a fixed colour that is used identically on every page it appears — set manually via the visual's Format pane → Data colors, rather than left to Power BI's default auto-assignment (which can shift order/colour per visual).
+- **Alignment:** all visuals snapped to a consistent grid using Format → Align → Distribute Horizontally/Vertically, so KPI cards, charts, and slicers line up cleanly across the canvas.
+- **Visual hierarchy:** headline KPI cards sit at the top of Page 1 in the largest, boldest text; supporting charts are visually smaller and placed below, guiding the eye in the correct reading order.
+- **Font:** one consistent font family and a limited set of font sizes (title, axis label, data label) used throughout — no visual uses a font not used elsewhere in the report.
+- **White space:** deliberately avoided cramming every visual possible onto each page — each page holds 4–5 primary visuals plus slicers/navigation, leaving breathing room around each element.
+
+---
+
+## The Overall Story
+
+Read together, the three pages walk a manager through:
+
+1. **Page 1** — "Sales and profit are growing/declining by X%, and here's where in the world our business is concentrated."
+2. **Page 2** — "Here's specifically which product sub-categories and customers are responsible for that performance."
+3. **Page 3** — "Here's why the underperforming areas are underperforming — and here's the exact set of orders to investigate further."
+
+## Screenshots
+
+| File | Shows |
+|---|---|
+| `04_dashboard_overview.png` | Page 1 — Executive Overview |
+| `05_dashboard_analysis.png` | Page 2 — Detailed Analysis |
+| `06_dashboard_insights.png` | Page 3 — Diagnostic Analysis |
 
 
 
