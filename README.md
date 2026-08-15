@@ -692,7 +692,7 @@ so they read left-to-right like a scoreboard.
 ![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20211020.png?raw=true)
 ---
 
-## Page 2: Detailed Analysis — Product & Customer Analysis
+## Page 2: Detailed Analysis — Product , Customer Analysis & Geographical Insight
 
 **Purpose:** A deeper look at *which* products and *which* customers are driving
 the numbers seen on Page 1.
@@ -709,7 +709,7 @@ the numbers seen on Page 1.
 - **Drill-down** enabled on the treemap and bar chart: `Category → Sub-Category → Product Name`, so a manager can click into "Furniture" and see exactly which sub-category or product is underperforming.
 - **Cross-filtering:** clicking a Segment in the donut chart filters every other visual on the page (Power BI's default behaviour, verified to work cleanly with no conflicting bidirectional relationships from Section C).
 ![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20211519.png?raw=true)
----
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20211902.png?raw=true)
 
 ## Page 3: Advanced/Diagnostic Analysis
 
