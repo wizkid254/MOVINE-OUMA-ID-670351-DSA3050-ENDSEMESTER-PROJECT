@@ -223,7 +223,7 @@ measure inside every single visual.
 
 Result: A new categorical column, `Profitability Flag`, ready to be used
 directly in slicers, visuals, and drill-through pages.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-14%20125033.png?raw=true)
 ---
 
 ### 9. Building a dedicated Customer dimension (deduplication + conflict check)
