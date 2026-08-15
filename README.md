@@ -553,7 +553,7 @@ CALCULATE(
 "switched on" inside this specific measure via `USERELATIONSHIP()`, without
 affecting the default Order-Date-based time intelligence used everywhere else in
 the report.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20210547.png?raw=true)
 ---
 
 ## Documentation of the Six Most Important Measures
