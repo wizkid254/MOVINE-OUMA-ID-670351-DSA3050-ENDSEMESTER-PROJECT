@@ -259,7 +259,7 @@ Reason: Same normalization rationale as the customer dimension — reduces
 redundant storage and produces a valid dimension table for the star schema.
 
 Result: A clean `DimProduct` table with one row per unique `Product ID`.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-15%20202705.png?raw=true)
 ---
 
 ### 11. Building a Location dimension with a generated surrogate key
