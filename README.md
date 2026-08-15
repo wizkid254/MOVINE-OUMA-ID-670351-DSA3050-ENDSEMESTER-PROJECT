@@ -130,7 +130,7 @@ groupings).
 
 Result: One clearly-purposed field (`Region Group`) instead of two ambiguous,
 similarly-named columns.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-14%20121934.png?raw=true)
 ---
 
 ### 4. Removing and correctly re-deriving a pre-baked date attribute
