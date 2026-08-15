@@ -183,7 +183,7 @@ Reason: Consistent numeric precision across all monetary fields avoids rounding
 artefacts when these fields are combined in DAX measures (e.g. Profit Margin %).
 
 Result: All currency-related fields share a consistent decimal type.
-
+![This is an image](https://github.com/wizkid254/MOVINE-OUMA-ID-670351-DSA3050-ENDSEMESTER-PROJECT/blob/main/Screenshot%202026-08-14%20122805.png?raw=true)
 ---
 
 ### 7. Cleaning inconsistent text formatting
